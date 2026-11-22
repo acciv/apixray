@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  rust-and-bindings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Rust tests
+        run: cargo test --workspace
+      - name: Release build
+        run: cargo build --release --workspace
+      - name: Python binding demo
+        env:
+          APIXRAY_LIB: ${{ github.workspace }}/target/release/libapixray.so
+        run: python3 examples/python/demo.py
+      - name: C++ binding demo
+        run: |
+          g++ -std=c++17 examples/cpp/main.cpp -o /tmp/apixray_demo \
+            -Ltarget/release -lapixray -Wl,-rpath,${{ github.workspace }}/target/release
+          /tmp/apixray_demo
+      - name: CLI smoke test
+        run: |
+          ./target/release/apixray version
+          ./target/release/apixray generate github
