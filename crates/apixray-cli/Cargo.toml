@@ -1,0 +1,14 @@
+[package]
+name = "apixray-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "CLI для структурного анализа API-ключей"
+
+[[bin]]
+name = "apixray"
+path = "src/main.rs"
+
+[dependencies]
+apixray-core = { path = "../apixray-core" }
